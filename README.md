@@ -192,3 +192,10 @@ Then open **http://localhost:8000**.
 - **BLIP** (Salesforce) for image captioning
 - **CLIP** (OpenAI) via sentence-transformers
 - **VGG16** transfer learning for chest X-ray classification
+---
+
+## 📄 License
+
+This project's code is released under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+Note: the models used (Llama-2, BLIP, CLIP, VGG16) are subject to their own respective licenses.
