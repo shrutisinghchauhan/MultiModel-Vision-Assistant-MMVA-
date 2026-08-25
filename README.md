@@ -1,142 +1,194 @@
-# RAG-Based Offline Multi-Model Vision Chatbot with Decentralized Data
-
-![first_screen](https://github.com/jot-s-bindra/Vision-Decentralized-Offline-Chatbot/assets/112833146/a2a65527-dfcc-4a6a-a037-8e7f75d48291)
-![inference](https://github.com/jot-s-bindra/Vision-Decentralized-Offline-Chatbot/assets/112833146/20866aa0-2c67-4426-8f8c-8b6bcab0ed05)<!-- Add an image to represent your project -->
-
-## Overview
-
-This project hosts a fully offline multiModel -chatbot built on the Retrieval-Augmented Generation (RAG) model that even runs on CPU. It incorporates IPFS (pinata) technology for decentralized data storage, enabling secure and private interactions. The bot is designed to accept text prompts and images, utilizing a multimodal architecture to enhance language understanding.
-
-Main feature is we havent used vision LLM but used multiple models which have allowed us to do this image task with text llm too,Multimodel architecture is shown in the photo given below.
-
-Used thresholding to guide and manage multiple Models
-
-## Multi-Model Architecture
-![chatbot](https://github.com/jot-s-bindra/Vision-Decentralized-Offline-Chatbot/assets/112833146/19271f00-8d8a-437f-b967-9ebc02b83625)
-## Features
-
-- **Offline Chatbot**: Utilizes the RAG architecture for conversational AI.
-- **Blockchain Data Storage**: Ensures decentralized and secure data handling.
-- **Vision Integration**: Accepts images as prompts for interactions.Used MultiModel approach to include images as well in the prompt
-- **Fine-Tuning**: Its easier to fine tune as you can fine tune or apply the vgg model only for your suitable task which is a lot easier and computationally inexpensive than fine tuning LLM.
-- **Parameters**: Despite Using Multiple Models,Parameters are still lowers 7.6B model comprising all parameters of all the models .
-- **Streamlit Hosted**: The bot is deployed using Streamlit for easy access.
-
-## Architecture
-
-The chatbot employs a multimodal architecture, harnessing the capabilities of various models:
-- **LLama2-7b-chat-ggml**: Enhances language understanding.
-- **VGG16 Fine-tuned on RAG Data**: Enables vision-based interactions.
-- **Salesforce/blip-image-captioning-large**: Facilitates image captioning.
-- **CLIP-ViT-L-14**: Encoder to map both image and text to same vector space.
 
 
-## Setup
+<h1 align="center">🩻 MMVA — Multimodal Vision Assistant</h1>
 
-### Clone Repository and Install Dependencies
+<p align="center">
+  MMVA is an offline, decentralized multimodal assistant that answers questions about an image
+  by combining computer vision with a locally-run large language model. It classifies and captions
+  the image, retrieves supporting passages from your own documents, and generates a grounded answer
+  entirely on-device — no external APIs, so your data stays private.
+</p>
 
-1. Clone the repository:
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white" alt="PyTorch">
+  <img src="https://img.shields.io/badge/TensorFlow-FF6F00?logo=tensorflow&logoColor=white" alt="TensorFlow">
+  <img src="https://img.shields.io/badge/LangChain-1C3C3C?logo=langchain&logoColor=white" alt="LangChain">
+  <img src="https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white" alt="Flask">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
+</p>
 
-    ```bash
-    https://github.com/shrutisinghchauhan/MultiModel-Vision-Assistant-MMVA-
-    cd Vision-Decentralized-Offline-Chatbot
-    ```
+<!-- App screenshot -->
+<p align="center">
+  <img src="demoimg.png" alt="MMVA web interface" width="100%" />
+</p>
 
-2. Install dependencies:
+---
 
-    ```bash
-    pip install -r requirements.txt
-    ```
-  ### Pull Docker Image
+## 🎥 Demo
 
-  Alternatively, you can pull the Docker image from [https://github.com/shrutisinghchauhan/MultiModel-Vision-Assistant-MMVA-]
+Because MMVA runs a **7B-parameter Llama-2 model fully offline** (alongside VGG16,
+CLIP, and BLIP), it needs ~8 GB of RAM and is designed to run locally rather than
+on a free cloud tier. A short walkthrough is below; full setup takes a few minutes.
+
+<p align="center">
+  <img src="img2.png" alt="MMVA demo 1" width="48%" />
+  &nbsp;
+  <img src="img3.png" alt="MMVA demo 2" width="48%" />
+</p>
+
+---
+
+## 🌟 Overview
+
+MMVA answers questions about an image by combining **computer vision**, **retrieval**,
+and a **local large language model**. Given an image and a question, it:
+
+1. Classifies the image (e.g. a chest X-ray) with a fine-tuned CNN.
+2. Describes the image in natural language with an image-captioning model.
+3. Validates that the classification and the caption agree.
+4. Embeds the question, the image, and the caption, and retrieves the most relevant
+   passages from a document knowledge base.
+5. Feeds everything to a locally-run Llama-2 model, which generates a grounded answer.
+
+Everything runs on-device — the "decentralized, offline" design means **no data
+leaves the machine** and there is **no dependency on any external API**.
+
+---
+
+## 🌟 Key Features
+
+* **Multimodal input** — reasons over an image and a text question together.
+* **Retrieval-Augmented Generation (RAG)** — grounds answers in your own PDF
+  documents via a FAISS vector store, rather than relying on the model's memory.
+* **Medical image classification** — a VGG16 CNN classifies chest X-rays as
+  Normal, Bacterial, or Viral cases.
+* **Cross-checked vision** — the image caption and the CNN label are compared with
+  CLIP similarity to filter out low-confidence or mismatched predictions.
+* **Fully offline & private** — a quantized Llama-2-7B runs locally through
+  CTransformers; no API keys, no external calls.
+* **Extensible knowledge base** — upload a new PDF from the UI to rebuild the
+  vector store on the fly.
+
+---
+
+## 🧠 How It Works
+
+MMVA is a pipeline of specialized models that hand off to one another. The final
+answer is produced by the Llama-2 model, but only after the image has been
+classified, captioned, validated, and used to retrieve supporting context.
+
+```mermaid
+flowchart TD
+    A([User uploads image + question]) --> B[VGG16 CNN<br/>classify X-ray:<br/>Normal / Bacterial / Viral]
+    A --> C[BLIP<br/>generate image caption]
+
+    B --> D{CLIP similarity<br/>caption vs label<br/>&gt; 0.55 ?}
+    C --> D
+    D -- yes --> E[Use validated class label]
+    D -- no --> F[Treat as general image]
+
+    A --> G[CLIP embeddings]
+    C --> G
+    E --> G
+    F --> G
+    G --> H[(FAISS vector store<br/>of PDF documents)]
+    H --> I[Retrieve top matching<br/>passages: text / image / caption]
+
+    E --> J[Build grounded prompt]
+    F --> J
+    C --> J
+    I --> J
+    J --> K[[Llama-2-7B<br/>local LLM via CTransformers]]
+    K --> L([Grounded answer + retrieved sources])
+```
+
+### The models involved
+
+| Stage | Model | Role |
+| :--- | :--- | :--- |
+| Classification | **VGG16** (TensorFlow) | Labels chest X-rays (Normal / Bacterial / Viral) |
+| Captioning | **BLIP** (Salesforce) | Generates a natural-language description of the image |
+| Validation | **CLIP** (ViT-L/14) | Checks caption ↔ label agreement via cosine similarity |
+| Embedding + Retrieval | **CLIP** + **FAISS** | Embeds inputs and retrieves relevant document passages |
+| Generation | **Llama-2-7B-Chat** (GGML, CTransformers) | Produces the final grounded answer locally |
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+| :--- | :--- |
+| **Language** | Python 3.10 |
+| **LLM** | Llama-2-7B-Chat (GGML, quantized) via CTransformers — runs offline |
+| **Orchestration / RAG** | LangChain |
+| **Vision** | TensorFlow (VGG16), BLIP image captioning |
+| **Embeddings & Retrieval** | CLIP (ViT-L/14), FAISS vector store |
+| **Documents** | PyPDF (PDF ingestion) |
+| **Web App** | Flask, HTML/CSS/JavaScript |
+| **Core** | PyTorch, sentence-transformers, NumPy, Pandas |
+
+---
+
+## 📁 Directory Structure
+
+```text
+MMVA/
+├── app.py                  # Flask web app (routes: / , /chat , /upload-pdf)
+├── llm_model.py            # CLIP + FAISS + Llama-2 pipeline (text_generate)
+├── img2txt.py              # BLIP image captioning
+├── imgchecker.py           # CLIP caption-vs-label validation (if_valid)
+├── vgg16pred.py            # VGG16 chest X-ray classifier
+├── ingest.py               # Builds the FAISS vector store from PDFs
+├── templates/index.html    # Web UI
+├── static/                 # styles.css, app.js
+├── data/                   # Source PDF documents
+├── models/                 # Llama-2 (.bin) and VGG16 (.h5)  [not in repo]
+├── vectorstore/db_faiss    # FAISS index
+├── Dockerfile
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## 🚀 Running Locally
 
 ```bash
+# 1. Clone
+git clone https://github.com/shrutisinghchauhan/MultiModel-Vision-Assistant-MMVA-.git
+cd MultiModel-Vision-Assistant-MMVA-
+
+# 2. Create a Python 3.10 environment
+py -3.10 -m venv venv
+venv\Scripts\activate          # Windows
+
+# 3. Install dependencies
+pip install -r requirements.txt
+pip install flask
+
+# 4. Add the model files to models/
+#    - llama-2-7b-chat.ggmlv3.q8_0.bin  (from TheBloke's Llama-2-7B-Chat-GGML on Hugging Face)
+#    - vgg16.h5  (the trained chest X-ray classifier)
+
+# 5. (Optional) build the knowledge base from your PDFs in data/
+python ingest.py
+
+# 6. Run the app
+python app.py
 ```
 
-### Download Required Models
+Then open **http://localhost:8000**.
 
-1. Download the `llama2-7b-chat-ggml` model.[Download llama-2-7b-chat.ggmlv3.q8_0.bin](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGML/blob/main/llama-2-7b-chat.ggmlv3.q8_0.bin)
+> **Note on hosting:** MMVA is intentionally offline — it loads a 7B LLM plus
+> three vision models locally, needing ~8 GB of RAM. This is beyond free cloud
+> tiers, so it runs on-device by design. See the demo above for a walkthrough.
 
-2. Run the `VGGTransferLearning.ipynb` notebook to generate `vgg16.h5`.
+---
 
-3. Place both the `llama2-7b-chat-ggml` model and `vgg16.h5` inside a folder named `models` in the root directory of the project.
+## 🙏 Acknowledgements
 
-### Run the Streamlit App
-
-After downloading the necessary models:
-
-```bash
-streamlit run app.py
-```
-## Decentralizing file for chatbot training
-
-You need to install the IPFS software on your machine. Here's how you can do it:
-
-Step 1: Install IPFS
-
-You can install IPFS using various methods depending on your operating system.
-
-For instance, on Ubuntu, you can install IPFS using the package manager:
-
-```sudo apt-get install curl
-curl -sSL https://dist.ipfs.io/go-ipfs/v0.10.0/go-ipfs_v0.10.0_linux-amd64.tar.gz | sudo tar -xz -C /usr/local/bin ipfs
-```
-On macOS, you can use Homebrew:
-
-```brew install ipfs```
-For Windows, you can download the prebuilt binaries from the IPFS distributions .
-
-Step 2: Initialize IPFS
-
-Once IPFS is installed, you need to initialize it. This creates a new IPFS repository in your home directory:
-
-```ipfs init```
-Step 3: Start the IPFS Daemon
-
-Now you can start the IPFS daemon:
-
-```ipfs daemon```
-This starts the IPFS daemon, which is a background process that handles adding and retrieving files from the IPFS network 1.
-
-Note: The IPFS daemon must be running in order to add files to IPFS or retrieve files from it. If you stop the daemon, you'll need to restart it before you can perform these actions again.
-
- after the following run in new terminal 
- ```ipfs pin add FILE```
- the FILE that you want to add should be saved in the home directory
- 
- after the following command you would get a CID or if you already have a CID 
- 
- then you have to update the  `data` folder's file j.bat in windows :
- in your file  ```ipfs get <CID> ```
- 
- then in cli get to the data folder in current directory  ```.\commands.bat```
- 
- you have retrieved the required file successfully through the ipfs distributed p2p network.
- 
- or else we can use pinning services like pinata here to pin our files.
- note:- in order to get your data decentralised you must copy the new.pdf file in your home directory and delete the file in data folder 
- ## IPFS WORKING 
-![ipfs_chunker_4](https://github.com/jot-s-bindra/Vision-Decentralized-Offline-Chatbot/assets/112833146/17b099dd-e63d-4665-b998-4ba9e31c7001)
-visual representation of how IPFS (InterPlanetary File System) handles chunking and deduplication of data. Here's a breakdown of the components shown in the image:
-
-1. **Data Blocks**: These represent individual pieces of data that are broken down into smaller chunks. Each chunk is assigned a unique identifier or hash, which is used to reference it later.
-
-2. **Chunking**: This is the process of breaking down data into smaller pieces, or chunks. In the context of IPFS, data is divided into fixed-size blocks, each of which is hashed and added to the IPFS network.
-
-3. **Deduplication**: This is a process where IPFS checks if a piece of data already exists in the network before adding it. If a data block with the same hash already exists, IPFS reuses it instead of creating a new copy. This helps to save storage space and reduce redundancy.
-
-4. **Block Exchange Protocol (BEP)**: This is a protocol used by IPFS for exchanging data blocks between nodes. When a node requests a data block, it contacts other nodes that have the block and negotiates a deal to exchange the block.
-
-5. **Pinning**: Pinning is the process of telling an IPFS node to keep a certain file or data block around indefinitely. This ensures that the data remains available even if other nodes in the network go offline.
-
-Overall, this image illustrates the core principles of how IPFS works: chunking data into blocks, deduplicating data to save storage space, and using a peer-to-peer network to exchange data blocks efficiently 
-## Contributing
-
-Contributions are welcome! If you want to contribute to this project, follow these steps:
-1. Fork this repository.
-2. Create a new branch (`git checkout -b feature/improvement`).
-3. Make modifications and commit changes (`git commit -am 'Add feature/improvement'`).
-4. Push the changes to your branch (`git push origin feature/improvement`).
-5. Create a pull request.
-
+- **Llama-2** (Meta) via TheBloke's GGML quantization
+- **BLIP** (Salesforce) for image captioning
+- **CLIP** (OpenAI) via sentence-transformers
+- **VGG16** transfer learning for chest X-ray classification
