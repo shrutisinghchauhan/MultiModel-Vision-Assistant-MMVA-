@@ -1,0 +1,13 @@
+faiss-cpu==1.7.4
+huggingface_hub==0.20.0
+langchain==0.0.353
+numpy==1.23.5
+pandas==2.1.4
+pillow==10.0.1
+ctransformers==0.2.27
+sentence-transformers==2.2.2
+tensorflow==2.12.0
+transformers==4.31.0
+torch>=1.6.0
+streamlit==1.29.0
+pypdf==3.17.4

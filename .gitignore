@@ -1,0 +1,8 @@
+﻿venv/
+models/
+__pycache__/
+*.bin
+*.h5
+*.pyc
+vectorstore/
+uploads/uploaded_image.jpg

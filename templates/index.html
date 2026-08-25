@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple Chatbot</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> 
+    </head>
+<body>
+    <h1>Simple Chatbot Interface</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="text">Enter Text:</label><br>
+        <input type="text" id="text" name="text"><br><br>
+        <label for="image">Upload Image:</label><br>
+        <input type="file" id="image" name="image_path"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    <div>
+        {% if output %}
+            <h2>Generated Output:</h2>
+            <p>{{ output }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
+
