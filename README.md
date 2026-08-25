@@ -38,7 +38,7 @@ The chatbot employs a multimodal architecture, harnessing the capabilities of va
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/Purav001/Vision-Decentralized-Offline-Chatbot.git
+    https://github.com/shrutisinghchauhan/MultiModel-Vision-Assistant-MMVA-
     cd Vision-Decentralized-Offline-Chatbot
     ```
 
@@ -49,10 +49,9 @@ The chatbot employs a multimodal architecture, harnessing the capabilities of va
     ```
   ### Pull Docker Image
 
-  Alternatively, you can pull the Docker image from [jasleenxddd/offlinemultimodelvisionchatbot](https://hub.docker.com/r/jasleenxddd/offlinemultimodelvisionchatbot):
+  Alternatively, you can pull the Docker image from [https://github.com/shrutisinghchauhan/MultiModel-Vision-Assistant-MMVA-]
 
 ```bash
-docker pull jasleenxddd/offlinemultimodelvisionchatbot
 ```
 
 ### Download Required Models
